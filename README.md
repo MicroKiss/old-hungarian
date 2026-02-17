@@ -2,6 +2,8 @@
 
 A TypeScript/JavaScript library for converting Latin text to Old Hungarian script (Székely rovásírás). Supports the complete Hungarian alphabet, numbers, and alternative character variants.
 
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow.svg?style=flat&logo=buy-me-a-coffee)](https://buymeacoffee.com/microkiss)
+
 ## About Old Hungarian Script
 
 Old Hungarian script (Székely-Hungarian rovás, Hungarian: 𐲥𐳋𐳓𐳉𐳗-𐳘𐳀𐳍𐳀𐳢 𐳢𐳛𐳮𐳁𐳤) is a historical writing system used by Hungarians before the adoption of the Latin alphabet. It's still used today for decorative and cultural purposes, particularly in the Székely Land region of Romania.
