@@ -1,0 +1,31 @@
+# Source files (only publish compiled dist/)
+src/
+test/
+tsconfig.json
+
+# Development files
+.gitignore
+.eslintrc
+.prettierrc
+jest.config.json
+
+# IDE
+.vscode/
+.idea/
+
+# Git
+.git/
+
+# CI/CD
+.github/
+.travis.yml
+.gitlab-ci.yml
+
+# Documentation source (keep README.md)
+docs/
+
+# Test files
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
