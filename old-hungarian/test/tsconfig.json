@@ -1,0 +1,6 @@
+{
+  "include": [
+    "../helpers/helpers.ts"
+  ],
+  "extends": "../tsconfig.json"
+}

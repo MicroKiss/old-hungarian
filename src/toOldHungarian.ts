@@ -1,6 +1,7 @@
-import { getMaps, oldHungarianNumbers } from './characterMap.js';
+import { getLatinToOldHungarianMaps } from './characterMap.js';
 import { IllegalCharacterError } from './errors.js';
-import { validateLatinInput, findIllegalCharacter } from './validation.js';
+import { validateLatinInput, findIllegalLatinCharacter } from './validation.js';
+import {convertNumbersToOldHungarian} from './convertNumbersToOldHungarian.js'
 
 function convertDoubleCharactersToOldHungarian(text: string, doubleMap: ReadonlyMap<string, string>): string {
 	let result = '';
@@ -30,56 +31,15 @@ function convertSingleCharactersToOldHungarian(text: string, singleMap: Readonly
 	return result;
 }
 
-function convertNumbersAdditively(number: number): string {
-	let result = '';
-	for (const { value, oldHungarian } of oldHungarianNumbers) {
-		while (number >= value) {
-			result += oldHungarian;
-			number -= value;
-		}
-	}
-	return result;
-}
-
-//above hundreds we write the number in multiplicative format, below we write it in additive format
-function convertNumbersMultiplicatively(number: number): string {
-	let result = '';
-	
-	const addMultiplicativePlace = (value: number, symbol: string): number => {
-		const count = Math.floor(number / value);
-		if (count > 1) {
-			result += convertNumbersAdditively(count) + symbol;
-		} else if (count === 1) {
-			result += symbol;
-		}
-		return number - (count * value);
-	};
-	
-	number = addMultiplicativePlace(1000, '𐳿');
-	number = addMultiplicativePlace(100, '𐳾');
-	result += convertNumbersAdditively(number);
-	
-	return result;
-}
-
-function convertNumbersToOldHungarian(text: string, format: 'additive' | 'multiplicative'): string {
-	return text.replace(/\d+/g, (match) => {
-		const number = parseInt(match, 10);
-		return format === 'additive' 
-			? convertNumbersAdditively(number)
-			: convertNumbersMultiplicatively(number);
-	});
-}
-
 /**
  * Options for customizing the conversion from Latin to Old Hungarian script
  */
 export type ToOldHungarianOptions = {
 	/**
-	 * Allow non-Latin characters to pass through without throwing an error
+	 * Enforce strict mode, throwing an error for translatable characters ( ?.!, etc.) instead of passing them through
 	 * @default false
 	 */
-	allowIllegalCharacters?: boolean;
+	strict?: boolean;
 	/**
 	 * Number conversion format
 	 * - 'multiplicative': Better for large numbers (456 = 4×100 + 5×10 + 6×1)
@@ -111,7 +71,7 @@ export type ToOldHungarianOptions = {
  * @param text - The Latin text to convert (Hungarian alphabet, digits, and spaces)
  * @param options - Optional conversion settings
  * @returns The text converted to Old Hungarian script
- * @throws {IllegalCharacterError} When input contains non-Latin characters and allowIllegalCharacters is false
+ * @throws {IllegalCharacterError} When input contains non-Latin characters and strict mode is enabled
  * 
  * @example
  * ```typescript
@@ -119,13 +79,15 @@ export type ToOldHungarianOptions = {
  * ```
  */
 export function toOldHungarian(text: string, options?: ToOldHungarianOptions): string {
-	const allowIllegal = options?.allowIllegalCharacters ?? false;
+    text = text.normalize('NFC');
+    
+    const strict = options?.strict ?? false;
 	const useAltK = options?.alternativeK ?? false;
 	const useAltO = options?.alternativeO ?? false;
 	const numberFormat = options?.numberFormat ?? 'multiplicative';
 	
-	if (!allowIllegal && !validateLatinInput(text)) {
-		const illegal = findIllegalCharacter(text);
+	if (strict && !validateLatinInput(text)) {
+		const illegal = findIllegalLatinCharacter(text);
 		if (illegal) {
 			throw new IllegalCharacterError(
 				`Input contains illegal character '${illegal.character}' at position ${illegal.position}`,
@@ -136,9 +98,9 @@ export function toOldHungarian(text: string, options?: ToOldHungarianOptions): s
 		throw new IllegalCharacterError('Input contains illegal character', '', -1);
 	}
 
-	let result = convertNumbersToOldHungarian(text, numberFormat);
+	const maps = getLatinToOldHungarianMaps(useAltK, useAltO);
 	
-	const maps = getMaps(useAltK, useAltO);
+	let result = convertNumbersToOldHungarian(text, numberFormat);
 	result = convertDoubleCharactersToOldHungarian(result, maps.double);
 	result = convertSingleCharactersToOldHungarian(result, maps.single);
 	

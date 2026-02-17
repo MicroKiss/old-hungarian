@@ -8,6 +8,7 @@ tsconfig.json
 .eslintrc
 .prettierrc
 jest.config.json
+eslint.config.js
 
 # IDE
 .vscode/
@@ -20,9 +21,6 @@ jest.config.json
 .github/
 .travis.yml
 .gitlab-ci.yml
-
-# Documentation source (keep README.md)
-docs/
 
 # Test files
 *.test.ts

@@ -1,8 +1,39 @@
-import { oldHungarianCharacters } from './characterMap.js';
+import { oldHungarianCharacters, oldHungarianNumbers } from './characterMap.js';
 import { capitalize } from './helpers/capitalize.js';
 
 const LEGAL_DIGITS = '0123456789';
 const SPACE = ' ';
+
+const legalLatinCharacters = 
+		oldHungarianCharacters.map(({ latin }) => latin).join('') + 
+		oldHungarianCharacters.map(({ latin }) => capitalize(latin)).join('') +
+		SPACE + LEGAL_DIGITS;
+		
+const legalLatinCharacterPattern = new RegExp(`^[${legalLatinCharacters}]+$`);
+
+const legalOldHungarianCharacters = 
+		oldHungarianCharacters.map(({ small, large }) => small + large).join('') + 
+		oldHungarianNumbers.descending.map(({ oldHungarian }) => oldHungarian).join('') +
+		SPACE;
+const legalOldHungarianCharacterPattern = new RegExp(`^[${legalOldHungarianCharacters}]+$`, 'u');
+
+
+export function validateOldHungarianInput (text:string): boolean {
+	return legalOldHungarianCharacterPattern.test(text);
+}
+
+export function findIllegalOldHungarianCharacter(text: string): { character: string; position: number } | null {
+	if (legalOldHungarianCharacterPattern.test(text)) {
+		return null;
+	}
+	const chars = [...text]; // Convert to array of Unicode characters
+	for (let i = 0; i < chars.length; i++) {
+		if (!legalOldHungarianCharacterPattern.test(chars[i])) {
+			return { character: chars[i], position: i };
+		}
+	}
+	return null;
+}
 
 /**
  * Validates if the input text contains only legal Latin characters, digits, and spaces
@@ -25,13 +56,7 @@ const SPACE = ' ';
  * ```
  */
 export function validateLatinInput(text: string): boolean {
-	const legalCharacters = 
-		oldHungarianCharacters.map(({ latin }) => latin).join('') + 
-		oldHungarianCharacters.map(({ latin }) => capitalize(latin)).join('') +
-		SPACE + LEGAL_DIGITS;
-	const latinPattern = new RegExp(`^[${legalCharacters}]+$`, 'i');
-	
-	return latinPattern.test(text);
+	return legalLatinCharacterPattern.test(text);
 }
 
 /**
@@ -42,27 +67,21 @@ export function validateLatinInput(text: string): boolean {
  * 
  * @example
  * ```typescript
- * findIllegalCharacter('Szia'); // null
- * findIllegalCharacter('Hello 世界'); // { character: '世', position: 6 }
- * findIllegalCharacter('café™'); // { character: '™', position: 4 }
+ * findIllegalLatinCharacter('Szia'); // null
+ * findIllegalLatinCharacter('Hello 世界'); // { character: '世', position: 6 }
+ * findIllegalLatinCharacter('café™'); // { character: '™', position: 4 }
  * ```
  */
-export function findIllegalCharacter(text: string): { character: string; position: number } | null {
-	const legalCharacters = 
-		oldHungarianCharacters.map(({ latin }) => latin).join('') + 
-		oldHungarianCharacters.map(({ latin }) => capitalize(latin)).join('') +
-		SPACE + LEGAL_DIGITS;
-	const latinPattern = new RegExp(`^[${legalCharacters}]+$`, 'i');
-	
-	if (latinPattern.test(text)) {
+export function findIllegalLatinCharacter(text: string): { character: string; position: number } | null {
+	if (legalLatinCharacterPattern.test(text)) {
 		return null;
 	}
 	
-	const illegalChar = text.split('').find(char => !latinPattern.test(char));
-	if (!illegalChar) {
-		return null;
+	const chars = [...text]; // Convert to array of Unicode characters
+	for (let i = 0; i < chars.length; i++) {
+		if (!legalLatinCharacterPattern.test(chars[i])) {
+			return { character: chars[i], position: i };
+		}
 	}
-	
-	const position = text.indexOf(illegalChar);
-	return { character: illegalChar, position };
+	return null;
 }

@@ -1,12 +1,13 @@
 {
   "name": "old-hungarian",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Convert Latin text to Old Hungarian script (Székely rovásírás)",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "docs"
   ],
   "scripts": {
     "build": "tsc",

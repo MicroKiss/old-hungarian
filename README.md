@@ -1,6 +1,6 @@
-# Old Hungarian Script Converter
+# Old Hungarian(Hungarian runes) Script Converter
 
-A TypeScript/JavaScript library for converting Latin text to Old Hungarian script (Székely rovásírás). Supports the complete Hungarian alphabet, numbers, and alternative character variants.
+A TypeScript/JavaScript library for bidirectional conversion between Latin text and Old Hungarian script (Székely rovásírás). Supports the complete Hungarian alphabet, numbers, and alternative character variants.
 
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow.svg?style=flat&logo=buy-me-a-coffee)](https://buymeacoffee.com/microkiss)
 
@@ -10,7 +10,9 @@ Old Hungarian script (Székely-Hungarian rovás, Hungarian: 𐲥𐳋𐳓𐳉𐳗
 
 ## Features
 
+- **Bidirectional conversion** between Latin and Old Hungarian script
 - Convert Latin text to Old Hungarian script
+- Convert Old Hungarian script back to Latin text
 - Support for all Hungarian letters including digraphs (cs, gy, ly, ny, sz, ty, zs)
 - Number conversion with additive and multiplicative formats
 - Alternative character variants for 'k' and 'ö'
@@ -26,13 +28,21 @@ npm install old-hungarian
 ## Quick Start
 
 ```typescript
-import { toOldHungarian } from 'old-hungarian';
+import { toOldHungarian, fromOldHungarian } from 'old-hungarian';
 
+// Convert to Old Hungarian
 toOldHungarian('Szia');
 // '𐲥𐳐𐳀'
 
 toOldHungarian('Magyarország');
-// '𐲘𐳀𐳍𐳀𐳢𐳛𐳢𐳤𐳰𐳁𐳍'
+// '𐲘𐳀𐳎𐳀𐳢𐳛𐳢𐳥𐳁𐳍'
+
+// Convert from Old Hungarian
+fromOldHungarian('𐲥𐳐𐳀');
+// 'Szia'
+
+fromOldHungarian('𐲘𐳀𐳎𐳀𐳢𐳛𐳢𐳥𐳁𐳍');
+// 'Magyarország'
 
 // With options
 toOldHungarian('kör 456', { 
@@ -41,6 +51,11 @@ toOldHungarian('kör 456', {
   numberFormat: 'additive'
 });
 // '𐳔𐳞𐳢 𐳾𐳾𐳾𐳾𐳽𐳻𐳺'
+
+fromOldHungarian('𐳔𐳞𐳢 𐳾𐳾𐳾𐳾𐳽𐳻𐳺', {
+  numberFormat: 'additive'
+});
+// 'kör 456'
 ```
 
 ## Unicode Support
@@ -59,22 +74,33 @@ toOldHungarian('kör 456', {
 ```typescript
 import { 
   toOldHungarian,
+  fromOldHungarian,
   validateLatinInput,
+  validateOldHungarianInput,
   IllegalCharacterError 
 } from 'old-hungarian';
 
-// Basic conversion
+// Basic conversion to Old Hungarian
 const result = toOldHungarian('hello');
 // '𐳏𐳉𐳖𐳖𐳛'
 
-// Validation before conversion
+// Basic conversion from Old Hungarian
+const original = fromOldHungarian('𐳏𐳉𐳖𐳖𐳛');
+// 'hello'
+
+// Validation before conversion (Latin)
 if (validateLatinInput('Szia')) {
   const converted = toOldHungarian('Szia');
 }
 
+// Validation before conversion (Old Hungarian)
+if (validateOldHungarianInput('𐲥𐳐𐳀')) {
+  const converted = fromOldHungarian('𐲥𐳐𐳀');
+}
+
 // Error handling
 try {
-  toOldHungarian('Hello 世界');
+  toOldHungarian('Hello 世界', { strict: true });
 } catch (error) {
   if (error instanceof IllegalCharacterError) {
     console.log(`Illegal character '${error.illegalCharacter}' at position ${error.position}`);
@@ -90,8 +116,11 @@ try {
 ### Quick Reference
 
 - **`toOldHungarian(text, options?)`** - Convert Latin text to Old Hungarian script
-- **`validateLatinInput(text)`** - Check if text contains only legal characters  
-- **`findIllegalCharacter(text)`** - Find first illegal character and its position
+- **`fromOldHungarian(text, options?)`** - Convert Old Hungarian script to Latin text
+- **`validateLatinInput(text)`** - Check if text contains only legal Latin characters
+- **`findIllegalLatinCharacter(text)`** - Find first illegal Latin character and its position
+- **`validateOldHungarianInput(text)`** - Check if text contains only legal Old Hungarian characters
+- **`findIllegalOldHungarianCharacter(text)`** - Find first illegal Old Hungarian character and its position
 - **`IllegalCharacterError`** - Custom error class for illegal characters
 - **`oldHungarianCharacters`** - Array of character mappings
 - **`oldHungarianNumbers`** - Array of number mappings

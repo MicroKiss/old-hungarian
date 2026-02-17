@@ -4,11 +4,14 @@ Complete API documentation for the Old Hungarian Script Converter library.
 
 ## Table of Contents
 
-- [Main Function](#main-function)
+- [Main Functions](#main-functions)
   - [toOldHungarian()](#toOldHungarian)
+  - [fromOldHungarian()](#fromOldHungarian)
 - [Validation Functions](#validation-functions)
   - [validateLatinInput()](#validateLatinInput)
-  - [findIllegalCharacter()](#findIllegalCharacter)
+  - [findIllegalLatinCharacter()](#findIllegalLatinCharacter)
+  - [validateOldHungarianInput()](#validateOldHungarianInput)
+  - [findIllegalOldHungarianCharacter()](#findIllegalOldHungarianCharacter)
 - [Error Classes](#error-classes)
   - [IllegalCharacterError](#IllegalCharacterError)
 - [Data Exports](#data-exports)
@@ -18,7 +21,7 @@ Complete API documentation for the Old Hungarian Script Converter library.
 
 ---
 
-## Main Function
+## Main Functions
 
 ### `toOldHungarian(text, options?)`
 
@@ -30,7 +33,7 @@ Converts Latin text to Old Hungarian script.
 
 **Returns:** `string` - Converted text in Old Hungarian script
 
-**Throws:** `IllegalCharacterError` when input contains non-Latin characters
+**Throws:** `IllegalCharacterError` when input contains non-Latin characters and strict mode is enabled
 
 **Example:**
 ```typescript
@@ -48,26 +51,26 @@ toOldHungarian('Szia cica');
 
 #### Options
 
-##### `allowIllegalCharacters` (boolean, default: `false`)
+##### `strict` (boolean, default: `false`)
 
-Allow non-Latin characters to pass through unchanged. When set to `false` (default), the function throws an `IllegalCharacterError` if it encounters non-Latin characters.
+Enforce strict mode, throwing an error for non-translatable characters (punctuation, emojis, etc.) instead of passing them through. When set to `false` (default), illegal characters pass through unchanged.
 
 **Example:**
 ```typescript
-// Default behavior - throws error
+// Default behavior - allows illegal characters
 toOldHungarian('Hello 世界');
-// ❌ Throws IllegalCharacterError
-
-// Allow illegal characters
-toOldHungarian('Hello 世界', { allowIllegalCharacters: true });
 // '𐲏𐳉𐳖𐳖𐳛 世界' ✅
 
-// Mixed content with emojis
-toOldHungarian('Szia 😊', { allowIllegalCharacters: true });
+// Strict mode - throws error
+toOldHungarian('Hello 世界', { strict: true });
+// ❌ Throws IllegalCharacterError
+
+// Mixed content with emojis (default)
+toOldHungarian('Szia 😊');
 // '𐲥𐳐𐳀 😊'
 
-// Punctuation
-toOldHungarian('Hello!', { allowIllegalCharacters: true });
+// Punctuation (default)
+toOldHungarian('Hello!');
 // '𐲏𐳉𐳖𐳖𐳛!'
 ```
 
@@ -112,10 +115,9 @@ toOldHungarian('Budapest 2024');
 // '𐲂𐳪𐳇𐳀𐳠𐳉𐳤𐳦 𐳺𐳺𐳿𐳼𐳼𐳺𐳺𐳺𐳺'
 
 toOldHungarian('I have 5 cats', { 
-  allowIllegalCharacters: true,
   numberFormat: 'additive'
 });
-// 'I have 𐳻 cats'
+// '𐲐 𐳏𐳀𐳮𐳉 𐳻 𐳄𐳀𐳦𐳤'
 ```
 
 ##### `alternativeK` (boolean, default: `false`)
@@ -172,13 +174,117 @@ toOldHungarian('kör 123', {
 });
 // '𐳔𐳞𐳢 𐳾𐳼𐳼𐳺𐳺𐳺'
 
-toOldHungarian('Hello kör! 456', {
-  allowIllegalCharacters: true,
+toOldHungarian('kör 456', {
   alternativeK: true,
   alternativeO: true,
   numberFormat: 'multiplicative'
 });
-// 'Hello 𐳔𐳞𐳢! 𐳺𐳺𐳺𐳺𐳾𐳽𐳻𐳺'
+// '𐳔𐳞𐳢 𐳺𐳺𐳺𐳺𐳾𐳽𐳻𐳺'
+```
+
+---
+
+### `fromOldHungarian(text, options?)`
+
+Converts Old Hungarian script to Latin text.
+
+**Parameters:**
+- `text` (string) - Old Hungarian text to convert
+- `options` (FromOldHungarianOptions, optional) - Conversion options
+
+**Returns:** `string` - Converted text in Latin script
+
+**Throws:** `IllegalCharacterError` when input contains illegal characters and strict mode is enabled
+
+**Example:**
+```typescript
+import { fromOldHungarian } from 'old-hungarian';
+
+fromOldHungarian('𐳏𐳉𐳖𐳖𐳛');
+// 'hello'
+
+fromOldHungarian('𐲎𐳝𐳚𐳝𐳢𐳭');
+// 'Gyönyörű'
+
+fromOldHungarian('𐲥𐳐𐳀 𐳄𐳐𐳄𐳀');
+// 'Szia cica'
+```
+
+#### Options
+
+##### `strict` (boolean, default: `false`)
+
+Enforce strict mode, throwing an error for illegal characters instead of passing them through. When set to `false` (default), illegal characters pass through unchanged.
+
+**Example:**
+```typescript
+// Default behavior - allows illegal characters
+fromOldHungarian('𐳏𐳉𐳖𐳖𐳛 世界');
+// 'hello 世界' ✅
+
+// Strict mode - throws error
+fromOldHungarian('𐳏𐳉𐳖𐳖𐳛 世界', { strict: true });
+// ❌ Throws IllegalCharacterError
+```
+
+##### `numberFormat` ('additive' | 'multiplicative', default: `'multiplicative'`)
+
+Controls how Old Hungarian numerals are converted to numbers.
+
+**Multiplicative Format (default):**
+
+Interprets numerals using positional notation with multiplication.
+
+```typescript
+fromOldHungarian('𐳺𐳺𐳺𐳺𐳾𐳽𐳻𐳺');
+// '456' (multiplicative: 4×100 + 50 + 5 + 1)
+
+fromOldHungarian('𐳺𐳺𐳿𐳼𐳼𐳺𐳺𐳺𐳺');
+// '2024' (2×1000 + 2×10 + 4×1)
+
+fromOldHungarian('𐳺𐳺𐳾𐳼𐳼𐳼𐳻𐳺𐳺');
+// '237' (2×100 + 3×10 + 7×1)
+```
+
+**Additive Format:**
+
+Interprets numerals using traditional additive notation.
+
+```typescript
+fromOldHungarian('𐳾𐳾𐳾𐳾𐳽𐳻𐳺', { numberFormat: 'additive' });
+// '456' (additive: 100+100+100+100 + 50 + 5 + 1)
+
+fromOldHungarian('𐳿𐳿𐳼𐳼𐳺𐳺𐳺𐳺', { numberFormat: 'additive' });
+// '2024' (1000+1000 + 10+10 + 1+1+1+1)
+
+fromOldHungarian('𐳼𐳼𐳺𐳺𐳺', { numberFormat: 'additive' });
+// '23' (10+10 + 1+1+1)
+```
+
+**Numbers in Context:**
+
+```typescript
+fromOldHungarian('𐲂𐳪𐳇𐳀𐳠𐳉𐳤𐳦 𐳺𐳺𐳿𐳼𐳼𐳺𐳺𐳺𐳺');
+// 'Budapest 2024'
+
+fromOldHungarian('𐲐 𐳏𐳀𐳮𐳉 𐳻 𐳄𐳀𐳦𐳤', { numberFormat: 'additive' });
+// 'I have 5 cats'
+```
+
+##### Combined Options
+
+You can combine multiple options:
+
+```typescript
+fromOldHungarian('𐳔𐳞𐳢 𐳾𐳼𐳼𐳺𐳺𐳺', {
+  numberFormat: 'additive'
+});
+// 'kör 123'
+
+fromOldHungarian('𐳔𐳞𐳢 𐳺𐳺𐳺𐳺𐳾𐳽𐳻𐳺', {
+  numberFormat: 'multiplicative'
+});
+// 'kör 456'
 ```
 
 ---
@@ -222,7 +328,7 @@ validateLatinInput('café™');
 
 ---
 
-### `findIllegalCharacter(text)`
+### `findIllegalLatinCharacter(text)`
 
 Finds the first illegal character in the text and its position.
 
@@ -235,22 +341,91 @@ Finds the first illegal character in the text and its position.
 
 **Example:**
 ```typescript
-import { findIllegalCharacter } from 'old-hungarian';
+import { findIllegalLatinCharacter } from 'old-hungarian';
 
-findIllegalCharacter('Szia');
+findIllegalLatinCharacter('Szia');
 // null
 
-findIllegalCharacter('Hello 世界');
+findIllegalLatinCharacter('Hello 世界');
 // { character: '世', position: 6 }
 
-findIllegalCharacter('café™');
+findIllegalLatinCharacter('café™');
 // { character: '™', position: 4 }
 
 // Use with error messages
-const result = findIllegalCharacter('test™');
+const result = findIllegalLatinCharacter('test™');
 if (result) {
   console.log(`Found illegal character '${result.character}' at position ${result.position}`);
   // "Found illegal character '™' at position 4"
+}
+```
+
+---
+
+### `validateOldHungarianInput(text)`
+
+Checks if text contains only legal Old Hungarian characters and spaces.
+
+Legal characters include:
+- All Old Hungarian script characters (both lowercase and uppercase)
+- Spaces
+
+**Parameters:**
+- `text` (string) - Text to validate
+
+**Returns:** `boolean` - `true` if all characters are legal, `false` otherwise
+
+**Example:**
+```typescript
+import { validateOldHungarianInput } from 'old-hungarian';
+
+validateOldHungarianInput('𐲥𐳐𐳀');
+// true
+
+validateOldHungarianInput('𐳏𐳉𐳖𐳖𐳛 𐳺𐳺𐳺');
+// true
+
+validateOldHungarianInput('𐲘𐳀𐳍𐳀𐳢𐳛𐳢𐳤𐳰𐳁𐳍');
+// true
+
+validateOldHungarianInput('𐳏𐳉𐳖𐳖𐳛 世界');
+// false
+
+validateOldHungarianInput('test');
+// false
+```
+
+---
+
+### `findIllegalOldHungarianCharacter(text)`
+
+Finds the first illegal (non-Old Hungarian) character in the text and its position.
+
+**Parameters:**
+- `text` (string) - Text to check
+
+**Returns:** `{ character: string; position: number } | null`
+- Returns an object with the illegal character and its position (0-indexed)
+- Returns `null` if all characters are legal
+
+**Example:**
+```typescript
+import { findIllegalOldHungarianCharacter } from 'old-hungarian';
+
+findIllegalOldHungarianCharacter('𐲥𐳐𐳀');
+// null
+
+findIllegalOldHungarianCharacter('𐳏𐳉𐳖𐳖𐳛 世界');
+// { character: '世', position: 6 }
+
+findIllegalOldHungarianCharacter('𐳏𐳉𐳖𐳖𐳛™');
+// { character: '™', position: 5 }
+
+// Use with error messages
+const result = findIllegalOldHungarianCharacter('𐲥𐳐𐳀™');
+if (result) {
+  console.log(`Found illegal character '${result.character}' at position ${result.position}`);
+  // "Found illegal character '™' at position 3"
 }
 ```
 
@@ -260,7 +435,7 @@ if (result) {
 
 ### `IllegalCharacterError`
 
-Custom error class thrown when input contains non-Latin characters and `allowIllegalCharacters` is not enabled.
+Custom error class thrown when input contains non-Latin characters and strict mode is enabled.
 
 **Extends:** `Error`
 
@@ -288,10 +463,10 @@ try {
 }
 
 // Handling with validation first
-import { findIllegalCharacter } from 'old-hungarian';
+import { findIllegalLatinCharacter } from 'old-hungarian';
 
 const text = 'test™';
-const illegal = findIllegalCharacter(text);
+const illegal = findIllegalLatinCharacter(text);
 if (illegal) {
   console.warn(`Cannot convert: illegal character '${illegal.character}' at position ${illegal.position}`);
 } else {
@@ -383,7 +558,7 @@ Configuration options for the `toOldHungarian()` function.
 
 ```typescript
 type ToOldHungarianOptions = {
-  allowIllegalCharacters?: boolean;
+  strict?: boolean;
   numberFormat?: 'additive' | 'multiplicative';
   alternativeK?: boolean;
   alternativeO?: boolean;
@@ -391,10 +566,27 @@ type ToOldHungarianOptions = {
 ```
 
 **Properties:**
-- `allowIllegalCharacters?` (boolean, default: `false`) - Allow non-Latin characters
+- `strict?` (boolean, default: `false`) - Enforce strict mode, throwing an error for non-Latin characters
 - `numberFormat?` ('additive' | 'multiplicative', default: `'multiplicative'`) - Number conversion format
 - `alternativeK?` (boolean, default: `false`) - Use alternative 'k' variant
 - `alternativeO?` (boolean, default: `false`) - Use alternative 'ö' variant
+
+---
+
+### `FromOldHungarianOptions`
+
+Configuration options for the `fromOldHungarian()` function.
+
+```typescript
+type FromOldHungarianOptions = {
+  strict?: boolean;
+  numberFormat?: 'additive' | 'multiplicative';
+}
+```
+
+**Properties:**
+- `strict?` (boolean, default: `false`) - Enforce strict mode, throwing an error for illegal characters
+- `numberFormat?` ('additive' | 'multiplicative', default: `'multiplicative'`) - Number conversion format
 
 ---
 
@@ -446,27 +638,39 @@ const thousand: OldHungarianNumber = oldHungarianNumbers[0];
 ```typescript
 import { 
   toOldHungarian,
+  fromOldHungarian,
   validateLatinInput,
-  findIllegalCharacter,
+  findIllegalLatinCharacter,
+  validateOldHungarianInput,
+  findIllegalOldHungarianCharacter,
   IllegalCharacterError,
   oldHungarianCharacters,
   oldHungarianNumbers,
   type ToOldHungarianOptions,
+  type FromOldHungarianOptions,
   type OldHungarianCharacter,
   type OldHungarianNumber
 } from 'old-hungarian';
 
-// Main conversion
-const result = toOldHungarian('Szia', { numberFormat: 'additive' });
+// Convert to Old Hungarian
+const toOld = toOldHungarian('Szia');
 
-// Validation
+// Convert from Old Hungarian
+const fromOld = fromOldHungarian('𐲥𐳐𐳀');
+
+// Validation for Latin
 if (validateLatinInput('text')) {
-  // safe to convert
+  // safe to convert to Old Hungarian
+}
+
+// Validation for Old Hungarian
+if (validateOldHungarianInput('𐲥𐳐𐳀')) {
+  // safe to convert from Old Hungarian
 }
 
 // Error handling
 try {
-  toOldHungarian('invalid™');
+  toOldHungarian('invalid™', { strict: true });
 } catch (error) {
   if (error instanceof IllegalCharacterError) {
     console.error(error.message);
@@ -477,3 +681,4 @@ try {
 const characters: OldHungarianCharacter[] = oldHungarianCharacters;
 const numbers: readonly OldHungarianNumber[] = oldHungarianNumbers;
 ```
+

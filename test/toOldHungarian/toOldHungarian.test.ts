@@ -1,4 +1,4 @@
-import { toOldHungarian, IllegalCharacterError } from '../src/index.js';
+import { toOldHungarian, IllegalCharacterError } from '../../src/index.js';
 
 test('Convert vowels to old hungarian', () => {
   expect(toOldHungarian('a')).toBe('𐳀');
@@ -126,7 +126,7 @@ test('Convert sentences to old hungarian', () => {
 test('Non latin characters should throw IllegalCharacterError with details', () => {
   const TestError = (text: string, illegalChar: string, position: number) => {
     try {
-      toOldHungarian(text);
+      toOldHungarian(text, { strict: true });
       fail('Should have thrown an error');
     } catch (error) {
       expect(error).toBeInstanceOf(IllegalCharacterError);
@@ -145,16 +145,15 @@ test('Non latin characters should throw IllegalCharacterError with details', () 
   TestError('H?i There', '?', 1);
 });
 
-test('Allow illegal characters when option is set', () => {
-  const allowIllegal = (str: string) => toOldHungarian(str, { allowIllegalCharacters: true });
+test('Allow illegal characters by default', () => {
 
-  expect(allowIllegal('Hello 世界')).toBe('𐲏𐳉𐳖𐳖𐳛 世界');
-  expect(allowIllegal('café™')).toBe('𐳄𐳀𐳌𐳋™');
-  expect(allowIllegal('Szia mia 😺 ⚰️')).toBe('𐲥𐳐𐳀 𐳘𐳐𐳀 😺 ⚰️');
-  expect(allowIllegal('Привет мир')).toBe('Привет мир');
-  expect(allowIllegal('lang🥚egg')).toBe('𐳖𐳀𐳙𐳍🥚𐳉𐳍𐳍');
-  expect(allowIllegal('Test₁₂₃')).toBe('𐲦𐳉𐳤𐳦₁₂₃');
-  expect(allowIllegal('questionmark?questionmark')).toBe('𐳓𐳮𐳪𐳉𐳤𐳦𐳐𐳛𐳙𐳘𐳀𐳢𐳓?𐳓𐳮𐳪𐳉𐳤𐳦𐳐𐳛𐳙𐳘𐳀𐳢𐳓');
+  expect(toOldHungarian('Hello 世界')).toBe('𐲏𐳉𐳖𐳖𐳛 世界');
+  expect(toOldHungarian('café™')).toBe('𐳄𐳀𐳌𐳋™');
+  expect(toOldHungarian('Szia mia 😺 ⚰️')).toBe('𐲥𐳐𐳀 𐳘𐳐𐳀 😺 ⚰️');
+  expect(toOldHungarian('Привет мир')).toBe('Привет мир');
+  expect(toOldHungarian('lang🥚egg')).toBe('𐳖𐳀𐳙𐳍🥚𐳉𐳍𐳍');
+  expect(toOldHungarian('Test₁₂₃')).toBe('𐲦𐳉𐳤𐳦₁₂₃');
+  expect(toOldHungarian('questionmark?questionmark')).toBe('𐳓𐳮𐳪𐳉𐳤𐳦𐳐𐳛𐳙𐳘𐳀𐳢𐳓?𐳓𐳮𐳪𐳉𐳤𐳦𐳐𐳛𐳙𐳘𐳀𐳢𐳓');
 });
 
 test('Alternative K character', () => {
@@ -236,83 +235,17 @@ test('Switching between different option modes', () => {
 test('Alternative characters with other options', () => {
   const result1 = toOldHungarian('kör😊test', { 
     alternativeK: true, 
-    alternativeO: true,
-    allowIllegalCharacters: true 
+    alternativeO: true
   });
   expect(result1).toBe('𐳔𐳞𐳢😊𐳦𐳉𐳤𐳦');
 const result2 = toOldHungarian('köszönöm123', { 
-    alternativeO: true,
-    allowIllegalCharacters: true 
+    alternativeO: true
   });
   expect(result2).toBe('𐳓𐳞𐳥𐳞𐳙𐳞𐳘𐳾𐳼𐳼𐳺𐳺𐳺');
 const result3 = toOldHungarian('k!k', {
-    alternativeK: true,
-    allowIllegalCharacters: true
+    alternativeK: true
   });
   expect(result3).toBe('𐳔!𐳔');
-});
-
-test('Numbers basics symbols', () => {
-  expect(toOldHungarian('1')).toBe('𐳺');
-  expect(toOldHungarian('5')).toBe('𐳻');
-  expect(toOldHungarian('10')).toBe('𐳼');
-  expect(toOldHungarian('50')).toBe('𐳽');
-  expect(toOldHungarian('100')).toBe('𐳾');
-  expect(toOldHungarian('1000')).toBe('𐳿');
-
-  const additive = (num: string) => toOldHungarian(num, { numberFormat: 'additive' }); 
-
-  expect(additive('1')).toBe('𐳺');
-  expect(additive('5')).toBe('𐳻');
-  expect(additive('10')).toBe('𐳼');
-  expect(additive('50')).toBe('𐳽');
-  expect(additive('100')).toBe('𐳾');
-  expect(additive('1000')).toBe('𐳿');
-});
-
-test('Numbers with multiplicative format', () => {
-  expect(toOldHungarian('2')).toBe('𐳺𐳺');
-  expect(toOldHungarian('3')).toBe('𐳺𐳺𐳺');
-  expect(toOldHungarian('4')).toBe('𐳺𐳺𐳺𐳺');
-  expect(toOldHungarian('6')).toBe('𐳻𐳺');
-  expect(toOldHungarian('11')).toBe('𐳼𐳺');
-  expect(toOldHungarian('15')).toBe('𐳼𐳻');
-  expect(toOldHungarian('23')).toBe('𐳼𐳼𐳺𐳺𐳺');
-  expect(toOldHungarian('42')).toBe('𐳼𐳼𐳼𐳼𐳺𐳺');
-  expect(toOldHungarian('69')).toBe('𐳽𐳼𐳻𐳺𐳺𐳺𐳺');
-  expect(toOldHungarian('99')).toBe('𐳽𐳼𐳼𐳼𐳼𐳻𐳺𐳺𐳺𐳺');
-  expect(toOldHungarian('237')).toBe('𐳺𐳺𐳾𐳼𐳼𐳼𐳻𐳺𐳺');
-  expect(toOldHungarian('456')).toBe('𐳺𐳺𐳺𐳺𐳾𐳽𐳻𐳺');
-  expect(toOldHungarian('666')).toBe('𐳻𐳺𐳾𐳽𐳼𐳻𐳺');
-  expect(toOldHungarian('981')).toBe('𐳻𐳺𐳺𐳺𐳺𐳾𐳽𐳼𐳼𐳼𐳺');
-  expect(toOldHungarian('2019')).toBe('𐳺𐳺𐳿𐳼𐳻𐳺𐳺𐳺𐳺');
-  expect(toOldHungarian('1956')).toBe('𐳿𐳻𐳺𐳺𐳺𐳺𐳾𐳽𐳻𐳺');
-  expect(toOldHungarian('4814')).toBe('𐳺𐳺𐳺𐳺𐳿𐳻𐳺𐳺𐳺𐳾𐳼𐳺𐳺𐳺𐳺');
-  expect(toOldHungarian('137024')).toBe('𐳾𐳼𐳼𐳼𐳻𐳺𐳺𐳿𐳼𐳼𐳺𐳺𐳺𐳺');
-});
-
-test('Numbers with additive format', () => {
-  const additive = (num: string) => toOldHungarian(num, { numberFormat: 'additive' }); 
-
-  expect(additive('2')).toBe('𐳺𐳺');
-  expect(additive('3')).toBe('𐳺𐳺𐳺');
-  expect(additive('4')).toBe('𐳺𐳺𐳺𐳺');
-  expect(additive('6')).toBe('𐳻𐳺');
-  expect(additive('11')).toBe('𐳼𐳺');
-  expect(additive('15')).toBe('𐳼𐳻');
-  expect(additive('23')).toBe('𐳼𐳼𐳺𐳺𐳺');
-  expect(additive('42')).toBe('𐳼𐳼𐳼𐳼𐳺𐳺');
-  expect(additive('69')).toBe('𐳽𐳼𐳻𐳺𐳺𐳺𐳺');
-  expect(additive('99')).toBe('𐳽𐳼𐳼𐳼𐳼𐳻𐳺𐳺𐳺𐳺');
-  expect(additive('237')).toBe('𐳾𐳾𐳼𐳼𐳼𐳻𐳺𐳺');
-  expect(additive('456')).toBe('𐳾𐳾𐳾𐳾𐳽𐳻𐳺');
-  expect(additive('666')).toBe('𐳾𐳾𐳾𐳾𐳾𐳾𐳽𐳼𐳻𐳺');
-  expect(additive('981')).toBe('𐳾𐳾𐳾𐳾𐳾𐳾𐳾𐳾𐳾𐳽𐳼𐳼𐳼𐳺');
-
-  expect(additive('2019')).toBe('𐳿𐳿𐳼𐳻𐳺𐳺𐳺𐳺');
-  expect(additive('1956')).toBe('𐳿𐳾𐳾𐳾𐳾𐳾𐳾𐳾𐳾𐳾𐳽𐳻𐳺');
-  expect(additive('4814')).toBe('𐳿𐳿𐳿𐳿𐳾𐳾𐳾𐳾𐳾𐳾𐳾𐳾𐳼𐳺𐳺𐳺𐳺');
-  expect(additive('137024')).toBe('𐳿'.repeat(137) + '𐳼𐳼𐳺𐳺𐳺𐳺');
 });
 
 test('Number in sentence', () => {
@@ -324,4 +257,8 @@ test('Number in sentence', () => {
   expect(toOldHungarian('2024 az aktuális év', {numberFormat: 'additive'})).toBe('𐳿𐳿𐳼𐳼𐳺𐳺𐳺𐳺 𐳀𐳯 𐳀𐳓𐳦𐳪𐳁𐳖𐳐𐳤 𐳋𐳮');
   expect(toOldHungarian('The year is 2024')).toBe('𐲦𐳏𐳉 𐳐𐳒𐳉𐳀𐳢 𐳐𐳤 𐳺𐳺𐳿𐳼𐳼𐳺𐳺𐳺𐳺');
   expect(toOldHungarian('The year is 2024', {numberFormat: 'additive'})).toBe('𐲦𐳏𐳉 𐳐𐳒𐳉𐳀𐳢 𐳐𐳤 𐳿𐳿𐳼𐳼𐳺𐳺𐳺𐳺');
+});
+
+test('Empty string input', () => {
+  expect(toOldHungarian('')).toBe('');
 });

@@ -2,6 +2,8 @@
 
 Complete reference of all Latin to Old Hungarian character mappings.
 
+**Note:** These mappings work bidirectionally. You can use `toOldHungarian()` to convert from Latin to Old Hungarian, and `fromOldHungarian()` to convert from Old Hungarian back to Latin.
+
 ## Vowels
 
 | Latin | Old Hungarian (small/large) | Notes |
@@ -122,20 +124,32 @@ Some characters have alternative forms that can be used based on preference or h
 ### Words with Digraphs
 
 ```typescript
-import { toOldHungarian } from 'old-hungarian';
+import { toOldHungarian, fromOldHungarian } from 'old-hungarian';
 
+// Latin to Old Hungarian
 toOldHungarian('csaba');    // '𐳆𐳀𐳂𐳀'
 toOldHungarian('gyula');    // '𐳎𐳪𐳖𐳀'
-toOldHungarian('magyar');   // '𐳘𐳀𐳍𐳀𐳢'
+toOldHungarian('magyar');   // '𐳘𐳀�𐳀𐳢'
 toOldHungarian('szép');     // '𐳥𐳋𐳠'
+
+// Old Hungarian to Latin
+fromOldHungarian('𐳆𐳀𐳂𐳀');  // 'csaba'
+fromOldHungarian('𐳎𐳪𐳖𐳀');  // 'gyula'
+fromOldHungarian('𐳘𐳀𐳍𐳀𐳢');  // 'magyar'
+fromOldHungarian('𐳥𐳋𐳠');    // 'szép'
 ```
 
 ### Mixed Case
 
 ```typescript
+// Latin to Old Hungarian
 toOldHungarian('Magyarország');
-// '𐲘𐳀𐳍𐳀𐳢𐳛𐳢𐳤𐳰𐳁𐳍'
+// '𐲘𐳀𐳎𐳀𐳢𐳛𐳢𐳥𐳁𐳍'
 // M=𐲘 a=𐳀 gy=𐳎 a=𐳀 r=𐳢 o=𐳛 r=𐳢 sz=𐳥 á=𐳁 g=𐳍
+
+// Old Hungarian to Latin
+fromOldHungarian('𐲘𐳀𐳎𐳀𐳢𐳛𐳢𐳥𐳁𐳍');
+// 'Magyarország'
 ```
 
 ### Alternative Characters
@@ -148,6 +162,10 @@ toOldHungarian('kökény');
 // With alternatives
 toOldHungarian('kökény', { alternativeK: true, alternativeO: true });
 // '𐳔𐳞𐳔𐳋𐳚'
+
+// Converting back works regardless of which variant was used
+fromOldHungarian('𐳓𐳝𐳓𐳋𐳚');  // 'kökény'
+fromOldHungarian('𐳔𐳞𐳔𐳋𐳚');  // 'kökény'
 ```
 
 ## Resources
