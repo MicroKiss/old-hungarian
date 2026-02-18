@@ -28,6 +28,6 @@ export default tseslint.config(
 		...tseslint.configs.disableTypeChecked,
 	},
 	{
-		ignores: ['dist/**', 'node_modules/**', '*.config.js'],
+		ignores: ['dist/**', 'docs/**', 'node_modules/**', '*.config.js'],
 	}
 );

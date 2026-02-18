@@ -91,6 +91,11 @@ header h2 {
     transform: scale(1.05);
 }
 
+.links .bmc-btn {
+    transform: scale(0.7);
+    transform-origin: center;
+}
+
 main section {
     background: var(--card-bg);
     padding: 30px;
@@ -426,5 +431,9 @@ footer img:hover {
 
     #character-table {
         grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    }
+
+    .links .bmc-btn {
+        transform: scale(0.72);
     }
 }

@@ -93,7 +93,7 @@ test('Convert multi consonants to old hungarian', () => {
   expect(toOldHungarian('Zs')).toBe('𐲰');
 });
 
-test ('latin characters that equal combination of old hungarian characters', () => {
+test('latin characters that equal combination of old hungarian characters', () => {
   expect(toOldHungarian('q')).toBe('𐳓𐳮');
   expect(toOldHungarian('Q')).toBe('𐲓𐲮');
   expect(toOldHungarian('w')).toBe('𐳮𐳮');
@@ -117,6 +117,7 @@ test('Convert words to old hungarian', () => {
 
 test('Convert sentences to old hungarian', () => {
   expect(toOldHungarian('Szia cica')).toBe('𐲥𐳐𐳀 𐳄𐳐𐳄𐳀');
+  expect(toOldHungarian('Hello World')).toBe('𐲏𐳉𐳖𐳖𐳛 𐲮𐲮𐳛𐳢𐳖𐳇');
   expect(toOldHungarian('Gyönyörű nap')).toBe('𐲎𐳝𐳚𐳝𐳢𐳭 𐳙𐳀𐳠');
   expect(toOldHungarian('Árvíztűrő tükörfúrógép hol marad')).toBe('𐲁𐳢𐳮𐳑𐳯𐳦𐳭𐳢𐳟 𐳦𐳬𐳓𐳝𐳢𐳌𐳫𐳢𐳜𐳍𐳋𐳠 𐳏𐳛𐳖 𐳘𐳀𐳢𐳀𐳇');
   expect(toOldHungarian('The quick brown fox jumps over the lazy dog')).toBe('𐲦𐳏𐳉 𐳓𐳮𐳪𐳐𐳄𐳓 𐳂𐳢𐳛𐳮𐳮𐳙 𐳌𐳛𐳓𐳥 𐳒𐳪𐳘𐳠𐳤 𐳛𐳮𐳉𐳢 𐳦𐳏𐳉 𐳖𐳀𐳯𐳐𐳒 𐳇𐳛𐳍');
@@ -157,7 +158,7 @@ test('Allow illegal characters by default', () => {
 });
 
 test('Alternative K character', () => {
-expect(toOldHungarian('k')).toBe('𐳓');
+  expect(toOldHungarian('k')).toBe('𐳓');
   expect(toOldHungarian('K')).toBe('𐲓');
   expect(toOldHungarian('kör')).toBe('𐳓𐳝𐳢');
   expect(toOldHungarian('Káka')).toBe('𐲓𐳁𐳓𐳀');
@@ -171,7 +172,7 @@ expect(toOldHungarian('k')).toBe('𐳓');
 });
 
 test('Alternative O character', () => {
-expect(toOldHungarian('ö')).toBe('𐳝');
+  expect(toOldHungarian('ö')).toBe('𐳝');
   expect(toOldHungarian('Ö')).toBe('𐲝');
   expect(toOldHungarian('öt')).toBe('𐳝𐳦');
   expect(toOldHungarian('Ördög')).toBe('𐲝𐳢𐳇𐳝𐳍');
@@ -233,16 +234,16 @@ test('Switching between different option modes', () => {
 });
 
 test('Alternative characters with other options', () => {
-  const result1 = toOldHungarian('kör😊test', { 
-    alternativeK: true, 
+  const result1 = toOldHungarian('kör😊test', {
+    alternativeK: true,
     alternativeO: true
   });
   expect(result1).toBe('𐳔𐳞𐳢😊𐳦𐳉𐳤𐳦');
-const result2 = toOldHungarian('köszönöm123', { 
+  const result2 = toOldHungarian('köszönöm123', {
     alternativeO: true
   });
   expect(result2).toBe('𐳓𐳞𐳥𐳞𐳙𐳞𐳘𐳾𐳼𐳼𐳺𐳺𐳺');
-const result3 = toOldHungarian('k!k', {
+  const result3 = toOldHungarian('k!k', {
     alternativeK: true
   });
   expect(result3).toBe('𐳔!𐳔');
@@ -252,11 +253,11 @@ test('Number in sentence', () => {
   expect(toOldHungarian('A tartozásod 27 bárány és 2 szurony')).toBe('𐲀 𐳦𐳀𐳢𐳦𐳛𐳯𐳁𐳤𐳛𐳇 𐳼𐳼𐳻𐳺𐳺 𐳂𐳁𐳢𐳁𐳚 𐳋𐳤 𐳺𐳺 𐳥𐳪𐳢𐳛𐳚');
   expect(toOldHungarian('I have 2 cats and 3 dogs')).toBe('𐲐 𐳏𐳀𐳮𐳉 𐳺𐳺 𐳄𐳀𐳦𐳤 𐳀𐳙𐳇 𐳺𐳺𐳺 𐳇𐳛𐳍𐳤');
   expect(toOldHungarian('4567 és 1231 az 5798')).toBe('𐳺𐳺𐳺𐳺𐳿𐳻𐳾𐳽𐳼𐳻𐳺𐳺 𐳋𐳤 𐳿𐳺𐳺𐳾𐳼𐳼𐳼𐳺 𐳀𐳯 𐳻𐳿𐳻𐳺𐳺𐳾𐳽𐳼𐳼𐳼𐳼𐳻𐳺𐳺𐳺');
-  expect(toOldHungarian('4567 and 1231 is 5798', {numberFormat: 'additive'})).toBe('𐳿𐳿𐳿𐳿𐳾𐳾𐳾𐳾𐳾𐳽𐳼𐳻𐳺𐳺 𐳀𐳙𐳇 𐳿𐳾𐳾𐳼𐳼𐳼𐳺 𐳐𐳤 𐳿𐳿𐳿𐳿𐳿𐳾𐳾𐳾𐳾𐳾𐳾𐳾𐳽𐳼𐳼𐳼𐳼𐳻𐳺𐳺𐳺');
+  expect(toOldHungarian('4567 and 1231 is 5798', { numberFormat: 'additive' })).toBe('𐳿𐳿𐳿𐳿𐳾𐳾𐳾𐳾𐳾𐳽𐳼𐳻𐳺𐳺 𐳀𐳙𐳇 𐳿𐳾𐳾𐳼𐳼𐳼𐳺 𐳐𐳤 𐳿𐳿𐳿𐳿𐳿𐳾𐳾𐳾𐳾𐳾𐳾𐳾𐳽𐳼𐳼𐳼𐳼𐳻𐳺𐳺𐳺');
   expect(toOldHungarian('2026 az aktuális év')).toBe('𐳺𐳺𐳿𐳼𐳼𐳻𐳺 𐳀𐳯 𐳀𐳓𐳦𐳪𐳁𐳖𐳐𐳤 𐳋𐳮');
-  expect(toOldHungarian('2024 az aktuális év', {numberFormat: 'additive'})).toBe('𐳿𐳿𐳼𐳼𐳺𐳺𐳺𐳺 𐳀𐳯 𐳀𐳓𐳦𐳪𐳁𐳖𐳐𐳤 𐳋𐳮');
+  expect(toOldHungarian('2024 az aktuális év', { numberFormat: 'additive' })).toBe('𐳿𐳿𐳼𐳼𐳺𐳺𐳺𐳺 𐳀𐳯 𐳀𐳓𐳦𐳪𐳁𐳖𐳐𐳤 𐳋𐳮');
   expect(toOldHungarian('The year is 2024')).toBe('𐲦𐳏𐳉 𐳐𐳒𐳉𐳀𐳢 𐳐𐳤 𐳺𐳺𐳿𐳼𐳼𐳺𐳺𐳺𐳺');
-  expect(toOldHungarian('The year is 2024', {numberFormat: 'additive'})).toBe('𐲦𐳏𐳉 𐳐𐳒𐳉𐳀𐳢 𐳐𐳤 𐳿𐳿𐳼𐳼𐳺𐳺𐳺𐳺');
+  expect(toOldHungarian('The year is 2024', { numberFormat: 'additive' })).toBe('𐲦𐳏𐳉 𐳐𐳒𐳉𐳀𐳢 𐳐𐳤 𐳿𐳿𐳼𐳼𐳺𐳺𐳺𐳺');
 });
 
 test('Empty string input', () => {
