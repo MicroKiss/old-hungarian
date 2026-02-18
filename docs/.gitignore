@@ -1,2 +1,2 @@
 # Built library files (copied from parent dist folder)
-dist/
+# Note: These files must be committed for GitHub Pages to work
