@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Old Hungarian Script Converter - Demo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>𐲛𐳖𐳇 𐲏𐳪𐳙𐳍𐳀𐳢𐳐𐳀𐳙 𐲤𐳄𐳢𐳐𐳠𐳦 𐲄𐳛𐳙𐳮𐳉𐳢𐳦𐳉𐳢</h1>
+            <h2>Old Hungarian Script Converter</h2>
+            <p class="subtitle">Convert between Latin and Old Hungarian (Székely rovásírás) script</p>
+            <div class="links">
+                <a href="https://github.com/MicroKiss/old-hungarian" target="_blank">GitHub</a>
+                <a href="https://www.npmjs.com/package/old-hungarian" target="_blank">npm</a>
+                <a href="https://buymeacoffee.com/microkiss" target="_blank">
+                    <img src="https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow.svg?style=flat&logo=buy-me-a-coffee"
+                        alt="Buy Me A Coffee">
+                </a>
+            </div>
+        </header>
+
+        <main>
+            <section class="converter">
+                <div class="converter-panel">
+                    <h3>Latin Text</h3>
+                    <textarea id="latin-input" placeholder="Type Latin text here (e.g., almafa)..."
+                        oninput="convertToOldHungarian()"></textarea>
+                    <div class="char-count" id="latin-count">0 characters</div>
+                </div>
+
+                <div class="arrow">⇄</div>
+
+                <div class="converter-panel">
+                    <h3>Old Hungarian Script</h3>
+                    <textarea id="old-hungarian-input" placeholder="Or type Old Hungarian text here..."
+                        oninput="convertToLatin()" class="old-hungarian-text"></textarea>
+                    <div class="char-count" id="old-hungarian-count">0 characters</div>
+                </div>
+
+                <div class="bottom-controls">
+                    <div class="examples-inline">
+                        <strong>Examples:</strong>
+                        <div class="example-buttons">
+                            <button
+                                onclick="loadExample('The quick brown fox jumps over the lazy dog')">Sentence</button>
+                            <button onclick="loadExample('Magyarország')">Magyarország</button>
+                            <button onclick="loadExample('Hello World')">Hello World</button>
+                        </div>
+                    </div>
+
+                    <div class="options-inline">
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" id="strict" onchange="reconvert()">
+                                <span>Strict mode</span>
+                            </label>
+                            <label>
+                                <span>Number format:</span>
+                                <select id="number-format" onchange="reconvert()">
+                                    <option value="multiplicative" selected>Multiplicative</option>
+                                    <option value="additive">Additive</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="installation">
+                <p>Install: <code>npm install old-hungarian</code></p>
+            </section>
+            <section class="character-reference">
+                <h3>Character Reference</h3>
+                <div id="character-table"></div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 MicroKiss.</p>
+    </div>
+
+    <script type="module" src="demo.js"></script>
+</body>
+
+</html>

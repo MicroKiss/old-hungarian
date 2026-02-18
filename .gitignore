@@ -5,6 +5,9 @@ node_modules/
 dist/
 *.tsbuildinfo
 
+# Demo build files (generated from dist/)
+docs/dist/
+
 # Logs
 logs
 *.log
