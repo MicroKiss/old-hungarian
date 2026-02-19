@@ -1,14 +1,10 @@
-// This file will need to be built with your library bundled
-// For now, this is a template that shows how to use the library
-
-// Import functions (these will be bundled)
 import {
     toOldHungarian,
     fromOldHungarian,
     oldHungarianCharacters,
     oldHungarianNumbers
 } from './dist/index.js';
-// Initialize
+
 document.addEventListener('DOMContentLoaded', () => {
     initializeCharacterReference();
 });

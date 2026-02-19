@@ -15,6 +15,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "demo:prepare": "npm run build && (xcopy /E /I /Y dist docs\\dist || cp -r dist docs/dist)",
+    "demo:serve": "npx http-server docs -p 8080 -o",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
